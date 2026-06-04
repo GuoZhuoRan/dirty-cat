@@ -61,14 +61,15 @@
     const micBtn      = document.getElementById('mic-btn');
     const tagsDiv     = document.getElementById('emotion-tags');
 
+    const BASE = 'https://raw.githubusercontent.com/GuoZhuoRan/dirty-cat/main/static/gifs';
     const GIF_MAP = {
-      idle:      '/static/gifs/cat_idle.gif',
-      roast:     '/static/gifs/cat_roast.gif',
-      speechless:'/static/gifs/cat_speechless.gif',
-      approval:  '/static/gifs/cat_roast.gif',
-      care:      '/static/gifs/cat_idle.gif',
-      thinking:  '/static/gifs/cat_speechless.gif',
-      listening: '/static/gifs/cat_roast.gif',
+      idle:      `${BASE}/cat_idle.gif`,
+      roast:     `${BASE}/cat_roast.gif`,
+      speechless:`${BASE}/cat_speechless.gif`,
+      approval:  `${BASE}/cat_roast.gif`,
+      care:      `${BASE}/cat_idle.gif`,
+      thinking:  `${BASE}/cat_speechless.gif`,
+      listening: `${BASE}/cat_roast.gif`,
     };
 
     function setCatState(state) {
