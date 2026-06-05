@@ -2,7 +2,7 @@
 title: DirtyCat
 emoji: 🐱
 colorFrom: gray
-colorTo: black
+colorTo: gray
 sdk: docker
 app_file: app.py
 pinned: false
