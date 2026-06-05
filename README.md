@@ -1,3 +1,13 @@
+---
+title: DirtyCat
+emoji: 🐱
+colorFrom: gray
+colorTo: black
+sdk: docker
+app_file: app.py
+pinned: false
+---
+
 # 大叔猫 · Dirty Cat
 
 > Your AI life coach doesn't sugarcoat. Speak. Get emotionally analyzed. Get roasted into productivity.
