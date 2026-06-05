@@ -64,8 +64,11 @@
     const BASE = 'https://raw.githubusercontent.com/GuoZhuoRan/dirty-cat/main/static/gifs';
     const IDLE_LINES = [
       "Are you dead? Blink twice if you need help. Actually — are you just staring at the wall again?",
-      "Good morning. You look terrible. Let's get it.",
       "Okay. Phone down. Mouth shut. Eyes forward. Let's pretend you're a competent adult for the next 25 minutes.",
+    ];
+    const LATE_NIGHT_LINES = [
+      "It's 2am. Whatever you're doing right now is NOT your best work. Go to bed, you little gremlin.",
+      "Ah yes, the classic 'I'll just do one more thing' at midnight. Spoiler: you won't. You never do.",
     ];
     const DONE_LINES = [
       "Holy sh*t. You actually did it. I genuinely did not see that coming. Proud of you, weirdo.",
@@ -73,9 +76,11 @@
     ];
 
     const hour = new Date().getHours();
-    const greeting = (hour >= 6 && hour < 12)
-      ? "Good morning. You look terrible. Let's get it."
-      : IDLE_LINES[Math.floor(Math.random() * IDLE_LINES.length)];
+    const greeting = (hour >= 0 && hour < 5)
+      ? LATE_NIGHT_LINES[Math.floor(Math.random() * LATE_NIGHT_LINES.length)]
+      : (hour >= 6 && hour < 12)
+        ? "Good morning. You look terrible. Let's get it."
+        : IDLE_LINES[Math.floor(Math.random() * IDLE_LINES.length)];
     document.getElementById('transcript-box').textContent = greeting;
 
     const GIF_MAP = {
