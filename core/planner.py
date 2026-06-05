@@ -33,18 +33,18 @@ Examples:
 async def generate_daily_plan(
     emotion_result: dict[str, Any],
     user_transcript: str = "",
+    history: list[dict] | None = None,
 ) -> str:
-    """Generate Dirty Cat's daily plan based on detected emotion."""
-
     energy = emotion_result.get("energy_level", "medium")
     top_emotions = emotion_result.get("top_emotions", [])
     emotion_summary = ", ".join(f"{e['name']} ({e['score']:.2f})" for e in top_emotions)
 
-    user_message = f"""User's voice emotion analysis: {emotion_summary}
-Energy level: {energy}
-What they said: "{user_transcript or 'nothing, just breathed into the mic'}"
+    user_message = f'[emotion: {emotion_summary}, energy: {energy}] "{user_transcript or "nothing, just breathed into the mic"}"'
 
-Give them today's plan."""
+    messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+    if history:
+        messages.extend(history)
+    messages.append({"role": "user", "content": user_message})
 
     client = AsyncOpenAI(
         api_key=DEEPSEEK_API_KEY,
@@ -54,10 +54,7 @@ Give them today's plan."""
     response = await client.chat.completions.create(
         model="deepseek-chat",
         max_tokens=200,
-        messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": user_message},
-        ],
+        messages=messages,
     )
 
     return response.choices[0].message.content

@@ -6,6 +6,8 @@ import base64
 import os
 from pathlib import Path
 
+from collections import deque
+
 from dotenv import load_dotenv
 from fastapi import FastAPI, Form, HTTPException, UploadFile, File
 from fastapi.responses import JSONResponse, Response
@@ -21,6 +23,9 @@ app = FastAPI(title="Dirty Cat")
 
 STATIC_DIR = Path(__file__).parent / "static"
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+# In-memory conversation history — last 6 exchanges
+conversation_history: deque = deque(maxlen=6)
 
 
 @app.get("/")
@@ -45,11 +50,14 @@ async def checkin(
     except Exception as exc:
         raise HTTPException(status_code=502, detail=f"Emotion detection failed: {exc}")
 
-    # Step 2: Claude generates plan (emotion + transcript for richer context)
+    # Step 2: DeepSeek generates response with conversation history
     try:
-        plan_text = await generate_daily_plan(emotion_result, transcript)
+        plan_text = await generate_daily_plan(emotion_result, transcript, list(conversation_history))
     except Exception as exc:
         raise HTTPException(status_code=502, detail=f"Plan generation failed: {exc}")
+
+    conversation_history.append({"role": "user", "content": transcript or "(no words, just voice)"})
+    conversation_history.append({"role": "assistant", "content": plan_text})
 
     # Step 3: TTS
     audio_b64 = None
