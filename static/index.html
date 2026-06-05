@@ -74,6 +74,17 @@
       "Holy sh*t. You actually did it. I genuinely did not see that coming. Proud of you, weirdo.",
       "Look at you. Functioning like a real person. Your mom would be thrilled.",
     ];
+    const DOOMSCROLL_LINES = [
+      "Oh you're STILL on Instagram? Cool. I'll just sit here and watch your dreams die in real time.",
+      "Bro you've been on Reddit for 40 minutes. You haven't solved anything. You've just gotten dumber and angrier. Get back to work.",
+      "That's the third YouTube video in a row. You came here to work. YOU CAME HERE TO WORK.",
+    ];
+    const DOOMSCROLL_KEYWORDS = ['instagram', 'youtube', 'reddit', 'tiktok', 'twitter', 'scroll', 'doomscroll', 'reels', 'shorts'];
+
+    function isDoomscrolling(text) {
+      const lower = text.toLowerCase();
+      return DOOMSCROLL_KEYWORDS.some(k => lower.includes(k));
+    }
 
     const hour = new Date().getHours();
     const greeting = (hour >= 0 && hour < 5)
@@ -206,8 +217,8 @@
         });
 
         setCatState(data.emotion?.cat_state || 'roast');
-        const doneLine = DONE_LINES[Math.floor(Math.random() * DONE_LINES.length)];
-        transcriptB.textContent = doneLine;
+        const lines = isDoomscrolling(transcript) ? DOOMSCROLL_LINES : DONE_LINES;
+        transcriptB.textContent = lines[Math.floor(Math.random() * lines.length)];
         planBox.textContent = data.plan;
 
         if (data.audio_b64) {
