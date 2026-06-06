@@ -17,6 +17,7 @@ load_dotenv(override=True)
 
 from core.emotion import analyze_voice_emotion
 from core.planner import generate_daily_plan
+from core.transcribe import transcribe
 from core.tts import cartesia_tts
 
 app = FastAPI(title="Dirty Cat")
@@ -44,19 +45,25 @@ async def checkin(
     audio_bytes = await audio.read()
     mime_type = audio.content_type or "audio/webm"
 
-    # Step 1: Hume AI emotion from voice
+    # Step 1: Transcribe + emotion detection in parallel
+    import asyncio
     try:
-        emotion_result = await analyze_voice_emotion(audio_bytes, mime_type)
+        transcript_result, emotion_result = await asyncio.gather(
+            transcribe(audio_bytes, mime_type),
+            analyze_voice_emotion(audio_bytes, mime_type),
+        )
     except Exception as exc:
         raise HTTPException(status_code=502, detail=f"Emotion detection failed: {exc}")
 
+    final_transcript = transcript_result or transcript
+
     # Step 2: DeepSeek generates response with conversation history
     try:
-        plan_text = await generate_daily_plan(emotion_result, transcript, list(conversation_history))
+        plan_text = await generate_daily_plan(emotion_result, final_transcript, list(conversation_history))
     except Exception as exc:
         raise HTTPException(status_code=502, detail=f"Plan generation failed: {exc}")
 
-    conversation_history.append({"role": "user", "content": transcript or "(no words, just voice)"})
+    conversation_history.append({"role": "user", "content": final_transcript or "(no words, just voice)"})
     conversation_history.append({"role": "assistant", "content": plan_text})
 
     # Step 3: TTS
@@ -70,6 +77,7 @@ async def checkin(
     return JSONResponse({
         "emotion": emotion_result,
         "plan": plan_text,
+        "transcript": final_transcript,
         "audio_b64": audio_b64,
     })
 

@@ -217,8 +217,11 @@
         });
 
         setCatState(data.emotion?.cat_state || 'roast');
-        const lines = isDoomscrolling(transcript) ? DOOMSCROLL_LINES : DONE_LINES;
-        transcriptB.textContent = lines[Math.floor(Math.random() * lines.length)];
+        const serverTranscript = data.transcript || transcript;
+        const lines = isDoomscrolling(serverTranscript) ? DOOMSCROLL_LINES : DONE_LINES;
+        transcriptB.textContent = serverTranscript
+          ? `"${serverTranscript}" — ${lines[Math.floor(Math.random() * lines.length)]}`
+          : lines[Math.floor(Math.random() * lines.length)];
         planBox.textContent = data.plan;
 
         if (data.audio_b64) {
